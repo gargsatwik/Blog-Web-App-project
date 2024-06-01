@@ -1,12 +1,13 @@
 <%- include('partials/header.ejs') %>
 <body>
   <h1>Edit blog</h1>
-  <% if (typeof blog !== 'undefined') { %>
-    <form action="/edit-post/<%= postIndex %>" method="blog"> <input type="hidden" name="id" value="<%= blog.id %>"> <label for="title">Title:</label>
+    <form action="/edit-blog/<%= blogIndex %>" method="post">
+      <label for="title">Title:</label>
       <input type="text" id="title" name="title" maxlength="250" required value="<%= blog.title %>">
       <br>
       <label for="subtitle">Subtitle:</label>
-      <input type="text" id="subtitle" name="subtitle" maxlength="250" required value="<%= blog.title %>"> <br>
+      <input type="text" id="subtitle" name="subtitle" maxlength="250" required value="<%= blog.subtitle %>"> 
+      <br>
       <label for="body">Body:</label>
       <textarea id="body" name="body" rows="10" cols="50" required><%= blog.body %></textarea>
       <br>
@@ -17,9 +18,6 @@
       <input type="url" id="img_url" name="img_url" maxlength="250" required value="<%= blog.img_url %>">
       <br>
       <button type="submit">Update blog</button>
-    </form>
-  <% } else { %>
-    <p>No blog data found for editing.</p>
-  <% } %>  
+    </form> 
 </body>
 <%- include('partials/footer.ejs') %>

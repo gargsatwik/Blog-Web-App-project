@@ -1,17 +1,20 @@
 <%- include('partials/header.ejs') %>
 <body>
-    <header class="masthead">
+    <div class="container">
+      <header class="masthead">
         <div class="container position-relative px-4 px-lg-5">
           <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
               <div class="post-heading">
                 <h1><%= blog.title %></h1>
                 <h2 class="subheading"><%= blog.subtitle %></h2>
-                <span class="meta"
+                <strong>
+                  <span class="meta"
                   >Posted by
                   <a href="#"><%= blog.author %></a>
                   on <%= blog.date %>
                 </span>
+                </strong>
               </div>
             </div>
           </div>
@@ -24,11 +27,12 @@
             <div class="col-md-10 col-lg-8 col-xl-7">
               <%= blog.body %>
               <div class="d-flex justify-content-end mb-4">
-                <a class="btn btn-primary float-right" href="/edit-post/<%= post_index %>">Edit Post</a>
+                <a class="btn btn-primary float-right" href="/edit-blog/<%= blogIndex %>">Edit Blog</a>
               </div>
             </div>
           </div>
         </div>
       </article>
+    </div>
 </body>
 <%- include('partials/footer.ejs') %>

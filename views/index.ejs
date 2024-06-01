@@ -1,16 +1,18 @@
 <%- include('partials/header.ejs') %>
 <body>
     <% for (let i = 0; i < blogs.length; i++) { %>
-        <div class="post-preview">
-            <a href="/show-post/<%= i  %>">
-              <h1 class="post-title"><%= blogs[i].title %></h1>
-              <h3 class="post-subtitle"><%= blogs[i].subtitle %></h3>
+        <div class="blog-preview">
+            <a href="/show-blog/<%= i  %>">
+              <h1 class="blog-title"><%= blogs[i].title %></h1>
             </a>
-            <p class="post-meta">
-              Posted by
+              <h3 class="blog-subtitle"><%= blogs[i].subtitle %></h3>
+            <p class="blog-meta">
+              posted by
               <a href="#"><%= blogs[i].author %></a>
               on <%= blogs[i].date %>
-              <a href="/delete-post/<%= i %>">✘</a>
+              <form action="/delete-blog/<%= i %>" method="post" style="display:inline;">
+                <button type="submit">✘</button>
+            </form>
             </p>
           </div>
           <hr class="my-4" />

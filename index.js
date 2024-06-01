@@ -27,8 +27,18 @@ function makeDictionaryObject(data) {
         "date": formattedDate,
         "body": data.body,
         "author": data.author,
+        "img_url": data.img_url,
     }
 }
+
+function removeElement(array, index) {
+    if (index >= 0 && index < array.length) {
+      return array.slice(0, index).concat(array.slice(index + 1));
+    } else {
+      console.error("Invalid index for deletion:", index);
+      return array; 
+    }
+  }
 
 app.get('/', (req, res) => {
     res.render(_dirname+"/views/index.ejs", {blogs})
@@ -38,39 +48,39 @@ app.get('/about', (req, res) => {
     res.render(_dirname+"/views/about.ejs")
 })
 
-app.get('/new-post', (req, res) => {
-    res.render(_dirname+"/views/new_post.ejs")
+app.get('/new-blog', (req, res) => {
+    res.render(_dirname+"/views/new_blog.ejs")
 })
 
-app.post('/submit-post', (req, res) => {
+app.post('/submit-blog', (req, res) => {
     var receivedData = req.body;
     blogs.push(makeDictionaryObject(receivedData));
     res.redirect('/');
 })
 
-app.get('/show-post/:post_index', (req, res) => {
-    const postIndex = req.params.post_index;
-    const blog = blogs[req.params.post_index];
-    res.render(_dirname+'/views/view_post.ejs', {blog, post_index})
+app.get('/show-blog/:blog_index', (req, res) => {
+    const blogIndex = req.params.blog_index;
+    const blog = blogs[req.params.blog_index];
+    res.render(_dirname+'/views/view_blog.ejs', {blog, blogIndex});
 })
 
-app.get('/delete-post/:post_index', (req, res) => {
-    const postIndex = req.params.post_index;
-    blogs = blogs.filter((blogs, postIndex) => postIndex !== 2);
+app.post('/delete-blog/:blog_index', (req, res) => {
+    const blogIndex = req.params.blog_index;
+    blogs = removeElement(blogs, blogIndex);
     console.log(blogs);
     res.redirect('/');
 })
 
-app.get('/edit-post/:post_index', (req, res) => {
-    const postIndex = req.params.post_index;
-    const blog = blogs[req.params.post_index];
-    res.render(_dirname+'/views/edit.ejs', {blog, postIndex})
+app.get('/edit-blog/:blog_index', (req, res) => {
+    const blogIndex = req.params.blog_index;
+    const blog = blogs[req.params.blog_index];
+    res.render(_dirname+'/views/edit.ejs', {blog, blogIndex})
 })
 
-app.post('/edit-post/:post_index', (req, res) => {
-    const postIndex = req.params.post_index;
+app.post('/edit-blog/:blog_index', (req, res) => {
+    const blogIndex = req.params.blog_index;
     const data = req.body;
-    blogs[postIndex] = makeDictionaryObject(data);
+    blogs[blogIndex] = makeDictionaryObject(data);
     res.redirect('/');
 })
 
