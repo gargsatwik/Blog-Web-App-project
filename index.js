@@ -11,19 +11,27 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 var blogs = []
 
+function padToTwoDigits(num) {
+    return num.toString().padStart(2, '0');
+}
+
 function makeDictionaryObject(data) {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = padToTwoDigits(date.getMonth() + 1); // Months are zero-indexed
+    const day = padToTwoDigits(date.getDate());
+    const formattedDate = `${day}-${month}-${year}`;
     return {
-        "id": blogs.length,
         "title": data.title,
         "subtitle": data.subtitle,
-        "date": new Date().getDate,
+        "date": formattedDate,
         "body": data.body,
         "author": data.author,
     }
 }
 
 app.get('/', (req, res) => {
-    res.render(_dirname+"/views/index.ejs")
+    res.render(_dirname+"/views/index.ejs", {blogs})
 })
 
 app.get('/about', (req, res) => {
@@ -34,9 +42,35 @@ app.get('/new-post', (req, res) => {
     res.render(_dirname+"/views/new_post.ejs")
 })
 
-app.post('/new-post', (req, res) => {
+app.post('/submit-post', (req, res) => {
     var receivedData = req.body;
     blogs.push(makeDictionaryObject(receivedData));
+    res.redirect('/');
+})
+
+app.get('/show-post/:post_index', (req, res) => {
+    const postIndex = req.params.post_index;
+    const blog = blogs[req.params.post_index];
+    res.render(_dirname+'/views/view_post.ejs', {blog, post_index})
+})
+
+app.get('/delete-post/:post_index', (req, res) => {
+    const postIndex = req.params.post_index;
+    blogs = blogs.filter((blogs, postIndex) => postIndex !== 2);
+    console.log(blogs);
+    res.redirect('/');
+})
+
+app.get('/edit-post/:post_index', (req, res) => {
+    const postIndex = req.params.post_index;
+    const blog = blogs[req.params.post_index];
+    res.render(_dirname+'/views/edit.ejs', {blog, postIndex})
+})
+
+app.post('/edit-post/:post_index', (req, res) => {
+    const postIndex = req.params.post_index;
+    const data = req.body;
+    blogs[postIndex] = makeDictionaryObject(data);
     res.redirect('/');
 })
 

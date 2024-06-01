@@ -1,5 +1,19 @@
 <%- include('partials/header.ejs') %>
 <body>
-    
+    <% for (let i = 0; i < blogs.length; i++) { %>
+        <div class="post-preview">
+            <a href="/show-post/<%= i  %>">
+              <h1 class="post-title"><%= blogs[i].title %></h1>
+              <h3 class="post-subtitle"><%= blogs[i].subtitle %></h3>
+            </a>
+            <p class="post-meta">
+              Posted by
+              <a href="#"><%= blogs[i].author %></a>
+              on <%= blogs[i].date %>
+              <a href="/delete-post/<%= i %>">✘</a>
+            </p>
+          </div>
+          <hr class="my-4" />
+        <% } %>
 </body>
 <%- include('partials/footer.ejs') %>
