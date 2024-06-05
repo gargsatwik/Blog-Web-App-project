@@ -2,6 +2,8 @@ import express from "express";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import { MongoClient } from "mongodb";
 
 const app = express();
 const port = 3000;
@@ -18,7 +20,7 @@ function padToTwoDigits(num) {
 function makeDictionaryObject(data) {
     const date = new Date();
     const year = date.getFullYear();
-    const month = padToTwoDigits(date.getMonth() + 1); // Months are zero-indexed
+    const month = padToTwoDigits(date.getMonth() + 1); 
     const day = padToTwoDigits(date.getDate());
     const formattedDate = `${day}-${month}-${year}`;
     return {
