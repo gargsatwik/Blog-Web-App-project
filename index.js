@@ -5,25 +5,31 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 
+dotenv.config();
 const app = express();
 const port = 3000;
 const _dirname = dirname(fileURLToPath(import.meta.url))
+const DB_URI = process.env.DB_URI;
+const client = new MongoClient(DB_URI);
+await client.connect();
+const db = client.db("Blog Web App");
+const blogCollection = db.collection("blogs");
+
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }))
-
-var blogs = []
 
 function padToTwoDigits(num) {
     return num.toString().padStart(2, '0');
 }
 
-function makeDictionaryObject(data) {
+async function makeDictionaryObject(data, Id) {
     const date = new Date();
     const year = date.getFullYear();
     const month = padToTwoDigits(date.getMonth() + 1); 
     const day = padToTwoDigits(date.getDate());
     const formattedDate = `${day}-${month}-${year}`;
     return {
+        "id": Id || await blogCollection.countDocuments(),
         "title": data.title,
         "subtitle": data.subtitle,
         "date": formattedDate,
@@ -33,16 +39,8 @@ function makeDictionaryObject(data) {
     }
 }
 
-function removeElement(array, index) {
-    if (index >= 0 && index < array.length) {
-      return array.slice(0, index).concat(array.slice(index + 1));
-    } else {
-      console.error("Invalid index for deletion:", index);
-      return array; 
-    }
-  }
-
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+    const blogs = await blogCollection.find().toArray();
     res.render(_dirname+"/views/index.ejs", {blogs})
 })
 
@@ -56,33 +54,32 @@ app.get('/new-blog', (req, res) => {
 
 app.post('/submit-blog', (req, res) => {
     var receivedData = req.body;
-    blogs.push(makeDictionaryObject(receivedData));
+    blogCollection.insertOne(makeDictionaryObject(receivedData));
     res.redirect('/');
 })
 
-app.get('/show-blog/:blog_index', (req, res) => {
-    const blogIndex = req.params.blog_index;
-    const blog = blogs[req.params.blog_index];
-    res.render(_dirname+'/views/view_blog.ejs', {blog, blogIndex});
+app.get('/show-blog/:blogId', (req, res) => {
+    const blogId = req.params.blogId;
+    const blog = blogCollection.findOne( { "id": blogId } )
+    res.render(_dirname+'/views/view_blog.ejs', {blog, blogId});
 })
 
-app.post('/delete-blog/:blog_index', (req, res) => {
-    const blogIndex = req.params.blog_index;
-    blogs = removeElement(blogs, blogIndex);
-    console.log(blogs);
+app.post('/delete-blog/:blogId', (req, res) => {
+    const blogId = req.params.blogId;
+    blogCollection.deleteOne( { "id": blogId } );
     res.redirect('/');
 })
 
-app.get('/edit-blog/:blog_index', (req, res) => {
-    const blogIndex = req.params.blog_index;
-    const blog = blogs[req.params.blog_index];
-    res.render(_dirname+'/views/edit.ejs', {blog, blogIndex})
+app.get('/edit-blog/:blogId', (req, res) => {
+    const blogId = req.params.blogId;
+    const blog = blogCollection.findOne( { "id": blogId } );
+    res.render(_dirname+'/views/edit.ejs', {blog, blogId})
 })
 
-app.post('/edit-blog/:blog_index', (req, res) => {
-    const blogIndex = req.params.blog_index;
-    const data = req.body;
-    blogs[blogIndex] = makeDictionaryObject(data);
+app.post('/edit-blog/:blogId', (req, res) => {
+    const blogId = req.params.blogId;
+    blogCollection.deleteOne( { "id": blogId } );
+    blogCollection.insertOne(makeDictionaryObject(req.body, blogId));
     res.redirect('/');
 })
 
